@@ -34,3 +34,37 @@ discardBtn.addEventListener("click", () => {
   confirmCloseDialog.close();
   taskForm.classList.toggle("hidden");
 });
+
+// Task form event listener:
+taskForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  // Check if the task already exists:
+  const dataArrIndex = taskData.findIndex((item) => item.id === currentTask.id);
+  // Retrieve inputfield values & store them in a taskForm object:
+  const taskObj = {
+    // create a unique id:
+    id: `${titleInput.value.toLowerCase().split(" ").join("-")}-${Date.now()}`,
+    title: titleInput.value,
+    date: dateInput.value,
+    description: descriptionInput.value,
+  };
+  // Check if the task to add is a new task:
+  if (dataArrIndex === -1) {
+    taskData.unshift(taskObj);
+    console.log(taskData);
+  }
+  // Display the contents of taskData in UI:
+  taskData.forEach(({ id, title, date, description }) => {
+    tasksContainer.innerHTML = `
+      <div class="task" id="${id}">
+      <p><strong>Title:</strong>${title}</p>
+      <p><strong>Date:</strong>${date}</p>
+      <p><strong>Description:</strong>${description}</p>
+      <button type="button" class="btn">Edit</button>
+      <button type="button" class="btn">Delete</button>
+      </div>
+    `;
+  });
+  // Close the form modal:
+  taskForm.classList.toggle("hidden");
+});
