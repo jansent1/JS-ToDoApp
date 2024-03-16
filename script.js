@@ -17,27 +17,8 @@ const taskData = [];
 // Object to track state of the tasks when editing and discarding:
 let currentTask = {};
 
-// Button event listeners:
-openTaskFormBtn.addEventListener("click", () => {
-  taskForm.classList.toggle("hidden");
-});
-
-closeTaskFormBtn.addEventListener("click", () => {
-  confirmCloseDialog.showModal();
-});
-
-cancelBtn.addEventListener("click", () => {
-  confirmCloseDialog.close();
-});
-
-discardBtn.addEventListener("click", () => {
-  confirmCloseDialog.close();
-  taskForm.classList.toggle("hidden");
-});
-
-// Task form event listener:
-taskForm.addEventListener("submit", (e) => {
-  e.preventDefault();
+// add inputfields to taskData:
+const addOrUpdateTask = () => {
   // Check if the task already exists:
   const dataArrIndex = taskData.findIndex((item) => item.id === currentTask.id);
   // Retrieve inputfield values & store them in a taskForm object:
@@ -51,20 +32,60 @@ taskForm.addEventListener("submit", (e) => {
   // Check if the task to add is a new task:
   if (dataArrIndex === -1) {
     taskData.unshift(taskObj);
-    console.log(taskData);
   }
+  updateTaskContainer();
+  reset();
+};
+
+const updateTaskContainer = () => {
+  tasksContainer.innerHTML = "";
   // Display the contents of taskData in UI:
   taskData.forEach(({ id, title, date, description }) => {
-    tasksContainer.innerHTML = `
+    tasksContainer.innerHTML += `
       <div class="task" id="${id}">
-      <p><strong>Title:</strong>${title}</p>
-      <p><strong>Date:</strong>${date}</p>
-      <p><strong>Description:</strong>${description}</p>
-      <button type="button" class="btn">Edit</button>
-      <button type="button" class="btn">Delete</button>
+        <p><strong>Title:</strong> ${title}</p>
+        <p><strong>Date:</strong> ${date}</p>
+        <p><strong>Description:</strong> ${description}</p>
+        <button type="button" class="btn" onclick="editTask(this)">Edit</button>
+        <button type="button" class="btn" onclick="deleteTask(this)">Delete</button>
       </div>
     `;
   });
-  // Close the form modal:
+};
+
+// Clear input fields function:
+const reset = () => {
+  titleInput.value = "";
+  dateInput.value = "";
+  descriptionInput.value = "";
   taskForm.classList.toggle("hidden");
+  currentTask = {};
+};
+
+// Button event listeners:
+openTaskFormBtn.addEventListener("click", () =>
+  taskForm.classList.toggle("hidden")
+);
+
+closeTaskFormBtn.addEventListener("click", () => {
+  const formInputsContainValues =
+    titleInput.value || dateInput.value || descriptionInput.value;
+  if (formInputsContainValues) {
+    confirmCloseDialog.showModal();
+  } else {
+    reset();
+  }
+});
+
+cancelBtn.addEventListener("click", () => confirmCloseDialog.close());
+
+discardBtn.addEventListener("click", () => {
+  confirmCloseDialog.close();
+  reset();
+});
+
+// Task form event listener:
+taskForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  addOrUpdateTask();
 });
