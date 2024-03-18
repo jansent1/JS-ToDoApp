@@ -25,6 +25,7 @@ const addOrUpdateTask = () => {
   const taskObj = {
     // create a unique id:
     id: `${titleInput.value.toLowerCase().split(" ").join("-")}-${Date.now()}`,
+    // Asign inputvalues to other properties:
     title: titleInput.value,
     date: dateInput.value,
     description: descriptionInput.value,
@@ -60,6 +61,19 @@ const deleteTask = (buttonEl) => {
   );
   buttonEl.parentElement.remove();
   taskData.splice(dataArrIndex, 1);
+};
+
+// Edit Task function:
+const editTask = (buttonEl) => {
+  const dataArrIndex = taskData.findIndex(
+    (item) => item.id === buttonEl.parentElement.id
+  );
+  currentTask = taskData[dataArrIndex];
+  titleInput.value = currentTask.title;
+  dateInput.value = currentTask.date;
+  descriptionInput.value = currentTask.description;
+  addOrUpdateTaskBtn.innerText = "Update Task";
+  taskForm.classList.toggle("hidden");
 };
 
 // Clear input fields function:
