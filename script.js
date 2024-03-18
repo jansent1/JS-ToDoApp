@@ -12,13 +12,14 @@ const dateInput = document.getElementById("date-input");
 const descriptionInput = document.getElementById("description-input");
 
 // Array to store the tasks along with associated data:
-const taskData = [];
+const taskData = JSON.parse(localStorage.getItem("data")) || [];
 
 // Object to track state of the tasks when editing and discarding:
 let currentTask = {};
 
 // add inputfields to taskData:
 const addOrUpdateTask = () => {
+  addOrUpdateTaskBtn.innerText = "Add Task";
   // Check if the task already exists:
   const dataArrIndex = taskData.findIndex((item) => item.id === currentTask.id);
   // Retrieve inputfield values & store them in a taskForm object:
@@ -33,7 +34,10 @@ const addOrUpdateTask = () => {
   // Check if the task to add is a new task:
   if (dataArrIndex === -1) {
     taskData.unshift(taskObj);
+  } else {
+    taskData[dataArrIndex] = taskObj;
   }
+  localStorage.setItem("data", JSON.stringify(taskData));
   updateTaskContainer();
   reset();
 };
@@ -61,6 +65,7 @@ const deleteTask = (buttonEl) => {
   );
   buttonEl.parentElement.remove();
   taskData.splice(dataArrIndex, 1);
+  localStorage.setItem("data", JSON.stringify(taskData));
 };
 
 // Edit Task function:
@@ -85,6 +90,10 @@ const reset = () => {
   currentTask = {};
 };
 
+if (taskData.length) {
+  updateTaskContainer();
+}
+
 // Button event listeners:
 openTaskFormBtn.addEventListener("click", () =>
   taskForm.classList.toggle("hidden")
@@ -93,7 +102,11 @@ openTaskFormBtn.addEventListener("click", () =>
 closeTaskFormBtn.addEventListener("click", () => {
   const formInputsContainValues =
     titleInput.value || dateInput.value || descriptionInput.value;
-  if (formInputsContainValues) {
+  const formInputValuesUpdated =
+    titleInput.value !== currentTask.title ||
+    dateInput.value !== currentTask.date ||
+    descriptionInput.value !== currentTask.description;
+  if (formInputsContainValues && formInputValuesUpdated) {
     confirmCloseDialog.showModal();
   } else {
     reset();
@@ -112,3 +125,19 @@ taskForm.addEventListener("submit", (e) => {
   e.preventDefault();
   addOrUpdateTask();
 });
+/*
+const myTaskArr = [
+  { task: "Walk the Dog", date: "22-04-2022" },
+  { task: "Read some books", date: "02-11-2023" },
+  { task: "Watch football", date: "10-08-2021" },
+];
+
+localStorage.setItem("data", JSON.stringify(myTaskArr));
+localStorage.clear();
+
+const getTaskArr = localStorage.getItem("data");
+console.log(getTaskArr);
+
+const getTaskArrObj = JSON.parse(localStorage.getItem("data"));
+console.log(getTaskArrObj);
+*/
